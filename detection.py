@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import argparse
 
 def grayscale(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -63,9 +64,21 @@ def lane_detection_pipeline(img):
         cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
     return img
 
-img = cv2.imread("/home/bennyg/Images/lane.jpg")
-final_img = lane_detection_pipeline(img)
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--video', required=True, type=str ,help='path of the video')
+    args = parser.parse_args()
 
-cv2.imshow("image", final_img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    cap = cv2.VideoCapture(args.video)
+
+    while(cap.isOpened()):
+        ret, frame = cap.read()
+        final_frame = lane_detection_pipeline(frame)
+        cv2.imshow('frame', final_frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+    main()
